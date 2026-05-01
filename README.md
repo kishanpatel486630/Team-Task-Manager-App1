@@ -1,4 +1,3 @@
-
 # Team Task Manager App
 
 A modern, collaborative task management application built with React, TypeScript, and Vite. This app enables teams to efficiently organize, track, and collaborate on tasks with an intuitive user interface.
@@ -31,7 +30,7 @@ A modern, collaborative task management application built with React, TypeScript
 
 ## 📋 Prerequisites
 
-- Node.js 16+ 
+- Node.js 16+
 - npm or yarn package manager
 
 ## 🚀 Getting Started
@@ -133,6 +132,7 @@ VITE_SUPABASE_KEY=your_supabase_key
 ## 🐛 Troubleshooting
 
 **Issue:** Dependencies not installing
+
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -140,6 +140,7 @@ npm install
 ```
 
 **Issue:** Port 5173 already in use
+
 ```bash
 # Use a different port
 npm run dev -- --port 3000
@@ -166,4 +167,3 @@ For issues, questions, or suggestions, please open an issue on [GitHub Issues](h
 - Icons from [Lucide React](https://lucide.dev/)
 - Design inspiration from the Figma project
 - Built with [Vite](https://vitejs.dev/)
-  

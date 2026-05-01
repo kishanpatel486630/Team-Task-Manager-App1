@@ -1,130 +1,115 @@
-/* Global styles and animations */
+/* Global styles and sensible card defaults (no glass blur)
+	 This file removes the heavy glass/backdrop-blur effect and provides
+	 solid, accessible card styles used across the app.
+*/
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  --card-bg: #ffffff; /* card background */
+  --card-border: rgba(15, 23, 42, 0.04);
+  --muted: #6b7280;
+  --primary-50: #eff6ff;
+}
 
 * {
-  @apply transition-colors duration-200;
+  box-sizing: border-box;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial;
 }
 
-/* Blob animation */
-@keyframes blob {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
+/* Replace glass-effect with solid card appearance */
+.glass-effect {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  color: #0f172a;
 }
 
+/* Keep small utility for subtle translucent blocks when needed */
+.soft-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(2, 6, 23, 0.04);
+  border-radius: 10px;
+}
+
+/* Remove backdrop blur utility so it doesn't cause glassy look */
+.backdrop-blur-xl {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Animation utilities (kept) */
 @keyframes slide-in-up {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+.animate-slide-in-up {
+  animation: slide-in-up 0.45s ease-out both;
+}
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+  0%,
+  100% {
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
 }
-
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animate-slide-in-up {
-  animation: slide-in-up 0.6s ease-out forwards;
-  opacity: 0;
-}
-
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Glass effect */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* Card hover effect */
+/* Card hover effect (subtle) */
 .card-hover {
-  @apply transform transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.08);
 }
 
-/* Smooth scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Simplified form/input placeholder and focus styles */
+input,
+textarea,
+select {
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
-
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
-  border-radius: 10px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.8);
-}
-
-/* Focus states */
 input:focus,
 textarea:focus,
 select:focus {
-  @apply outline-none;
+  outline: none;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.6);
 }
 
-/* Utility classes */
-.text-gradient {
-  @apply bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent;
-}
-
+/* Small helpers */
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -132,25 +117,22 @@ select:focus {
   overflow: hidden;
 }
 
-/* Button styles */
-button {
-  @apply font-medium;
+/* Badge/Avatar container fallback */
+.avatar-fallback {
+  background: #ef4444;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
 }
 
-/* Input placeholder */
-::placeholder {
-  @apply text-opacity-50;
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-
-/* Smooth transitions */
-a,
-button {
-  @apply transition-all duration-300;
-}
-
-/* Backdrop blur support */
-@supports (backdrop-filter: blur(1px)) {
-  .backdrop-blur-xl {
-    backdrop-filter: blur(20px);
-  }
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.12);
+  border-radius: 8px;
 }

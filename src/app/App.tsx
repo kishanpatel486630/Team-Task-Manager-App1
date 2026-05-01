@@ -121,57 +121,88 @@ function LoginPage({ onSwitchToRegister }: { onSwitchToRegister: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20 animate-slide-in-up">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl mb-4 shadow-lg">
-            <span className="text-white text-2xl font-bold">TP</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 animate-slide-in-up">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl mb-6 shadow-2xl transform hover:scale-110 transition-transform duration-300">
+              <span className="text-white text-3xl font-black">TP</span>
+            </div>
+            <h1 className="text-4xl font-black text-white mb-3">TaskFlow Pro</h1>
+            <p className="text-blue-100 text-base font-medium">Sign in to your workspace</p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">TaskFlow Pro</h1>
-          <p className="text-sm text-gray-600">Sign in to your workspace</p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-white font-semibold text-sm mb-2">Email Address</label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="name@example.com"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-white font-semibold text-sm mb-2">Password</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 text-sm text-red-100 backdrop-blur-sm flex items-start gap-3">
+                <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300 text-base" 
+              disabled={loading}
+            >
+              <Sparkles size={18} className="inline mr-2" />
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </form>
+
+          <div className="relative my-7">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white/5 text-white/60 backdrop-blur">or</span>
+            </div>
+          </div>
+
+          <p className="text-center text-white/80">
+            Don't have an account?{' '}
+            <button
+              onClick={onSwitchToRegister}
+              className="text-blue-300 font-bold hover:text-blue-200 transition-colors duration-300 underline decoration-blue-300/30 hover:decoration-blue-300"
+            >
+              Create one now
+            </button>
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="your@email.com"
-            className="glass-effect border-white/30"
-          />
-
-          <Input
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="••••••••"
-            className="glass-effect border-white/30"
-          />
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
-          <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg" disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign in'}
-          </Button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <button
-            onClick={onSwitchToRegister}
-            className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
-          >
-            Sign up
-          </button>
-        </p>
+        <div className="mt-8 text-center text-white/60 text-sm">
+          <p>© 2024 TaskFlow Pro. All rights reserved.</p>
+        </div>
       </div>
     </div>
   );
@@ -204,73 +235,112 @@ function RegisterPage({ onSwitchToLogin }: { onSwitchToLogin: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center p-4">
-      <div className="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md border border-white/20 animate-slide-in-up">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl mb-4 shadow-lg">
-            <span className="text-white text-2xl font-bold">TP</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+      </div>
+
+      <div className="relative z-10 w-full max-w-md">
+        <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 animate-slide-in-up">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl mb-6 shadow-2xl transform hover:scale-110 transition-transform duration-300">
+              <span className="text-white text-3xl font-black">TP</span>
+            </div>
+            <h1 className="text-4xl font-black text-white mb-3">Join TaskFlow Pro</h1>
+            <p className="text-blue-100 text-base font-medium">Create your account to get started</p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join TaskFlow Pro</h1>
-          <p className="text-sm text-gray-600">Create your account</p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-white font-semibold text-sm mb-2">First Name</label>
+                <Input
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  required
+                  placeholder="John"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-white font-semibold text-sm mb-2">Last Name</label>
+                <Input
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  required
+                  placeholder="Doe"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-white font-semibold text-sm mb-2">Email Address</label>
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                placeholder="name@example.com"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-white font-semibold text-sm mb-2">Password</label>
+              <Input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+                placeholder="Min. 8 characters"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all duration-300 backdrop-blur-sm"
+              />
+              <p className="text-white/50 text-xs mt-2">Password must be at least 8 characters long</p>
+            </div>
+
+            {error && (
+              <div className="bg-red-500/20 border border-red-400/50 rounded-xl p-4 text-sm text-red-100 backdrop-blur-sm flex items-start gap-3">
+                <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300 text-base" 
+              disabled={loading}
+            >
+              <Sparkles size={18} className="inline mr-2" />
+              {loading ? 'Creating account...' : 'Sign up'}
+            </Button>
+          </form>
+
+          <div className="relative my-7">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white/5 text-white/60 backdrop-blur">or</span>
+            </div>
+          </div>
+
+          <p className="text-center text-white/80">
+            Already have an account?{' '}
+            <button
+              onClick={onSwitchToLogin}
+              className="text-blue-300 font-bold hover:text-blue-200 transition-colors duration-300 underline decoration-blue-300/30 hover:decoration-blue-300"
+            >
+              Sign in
+            </button>
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="First Name"
-              value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-              required
-              className="glass-effect border-white/30"
-            />
-            <Input
-              label="Last Name"
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-              required
-              className="glass-effect border-white/30"
-            />
-          </div>
-
-          <Input
-            label="Email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-            className="glass-effect border-white/30"
-          />
-
-          <Input
-            label="Password"
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required
-            placeholder="Min. 8 characters"
-            className="glass-effect border-white/30"
-          />
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
-              {error}
-            </div>
-          )}
-
-          <Button type="submit" className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg" disabled={loading}>
-            {loading ? 'Creating account...' : 'Sign up'}
-          </Button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <button
-            onClick={onSwitchToLogin}
-            className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
-          >
-            Sign in
-          </button>
-        </p>
+        <div className="mt-8 text-center text-white/60 text-sm">
+          <p>© 2024 TaskFlow Pro. All rights reserved.</p>
+        </div>
       </div>
     </div>
   );

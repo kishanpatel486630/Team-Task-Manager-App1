@@ -2,7 +2,6 @@
 
 A modern, collaborative task management application built with React, TypeScript, and Vite. This app enables teams to efficiently organize, track, and collaborate on tasks with an intuitive user interface.
 
-**Design Reference:** [Figma Project](https://www.figma.com/design/jiawZwdZEBFxi84D16IaJO/Team-Task-Manager-App)
 
 ## ✨ Features
 

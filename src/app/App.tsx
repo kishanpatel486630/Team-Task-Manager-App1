@@ -452,7 +452,7 @@ function Sidebar({
 }
 
 // Dashboard View
-function DashboardView({ user }: { user: User }) {
+function DashboardView({ user, onSelectProject }: { user: User; onSelectProject?: (id: string) => void }) {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -462,6 +462,12 @@ function DashboardView({ user }: { user: User }) {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const handleTaskClick = (task: any) => {
+    if (onSelectProject && task.projectId) {
+      onSelectProject(task.projectId);
+    }
+  };
 
   if (loading) {
     return (
@@ -542,7 +548,12 @@ function DashboardView({ user }: { user: User }) {
           </div>
           <div className="divide-y divide-gray-100">
             {stats.recentTasks.map((task: any, index: number) => (
-              <div key={task.id} className="p-4 hover:bg-blue-50/50 transition-colors" style={{animationDelay: `${0.4 + index * 0.1}s`}}>
+              <div 
+                key={task.id}
+                onClick={() => handleTaskClick(task)}
+                className="p-4 hover:bg-blue-50/50 transition-all duration-300 cursor-pointer hover:pl-6" 
+                style={{animationDelay: `${0.4 + index * 0.1}s`}}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h4 className="text-sm font-semibold text-gray-900 mb-1">{task.title}</h4>
@@ -552,10 +563,16 @@ function DashboardView({ user }: { user: User }) {
                     <div className="flex items-center gap-2">
                       <Badge variant="status" value={task.status} />
                       <Badge variant="priority" value={task.priority} />
+                      {task.assignee && (
+                        <div className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                          <Avatar name={task.assignee} size="sm" />
+                          <span>{task.assignee}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {task.dueDate && (
-                    <div className="text-xs text-gray-500 flex items-center gap-1 ml-4">
+                    <div className="text-xs text-gray-500 flex items-center gap-1 ml-4 whitespace-nowrap">
                       <Calendar size={12} />
                       {new Date(task.dueDate).toLocaleDateString()}
                     </div>
@@ -642,30 +659,60 @@ function ProjectsView({ user, onSelectProject }: { user: User; onSelectProject: 
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className="glass-effect rounded-2xl p-6 border border-blue-200 hover:border-blue-400 transition-all duration-300 cursor-pointer card-hover animate-slide-in-up group"
-              onClick={() => onSelectProject(project.id)}
-              style={{animationDelay: `${index * 0.1}s`}}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                  <FolderKanban className="text-white" size={24} />
+          {projects.map((project, index) => {
+            const projectTasks = stats?.projectTasks?.[project.id] || { todo: 0, inProgress: 0, inReview: 0, done: 0 };
+            const totalTasks = Object.values(projectTasks).reduce((a: number, b: number) => a + b, 0);
+            
+            return (
+              <div
+                key={project.id}
+                className="glass-effect rounded-2xl p-6 border border-blue-200 hover:border-blue-400 transition-all duration-300 cursor-pointer card-hover animate-slide-in-up group"
+                onClick={() => onSelectProject(project.id)}
+                style={{animationDelay: `${index * 0.1}s`}}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                    <FolderKanban className="text-white" size={24} />
+                  </div>
+                </div>
+                <h3 className="font-bold text-gray-900 mb-2 text-lg group-hover:text-blue-600 transition-colors">{project.name}</h3>
+                {project.description && (
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
+                )}
+                
+                {/* Task Status Counts */}
+                <div className="bg-white/50 rounded-lg p-3 mb-4 grid grid-cols-4 gap-2">
+                  <div className="text-center">
+                    <div className="text-xs text-gray-600">To Do</div>
+                    <div className="font-bold text-blue-600">{projectTasks.todo || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-gray-600">In Progress</div>
+                    <div className="font-bold text-blue-700">{projectTasks.inProgress || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-gray-600">In Review</div>
+                    <div className="font-bold text-blue-800">{projectTasks.inReview || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-gray-600">Done</div>
+                    <div className="font-bold text-green-600">{projectTasks.done || 0}</div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-3 border-t border-gray-200">
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Users size={14} />
+                    {project.members?.length || 0} members
+                  </div>
+                  <div className="flex items-center gap-1 text-xs text-blue-600 ml-auto font-semibold">
+                    <CheckSquare size={14} />
+                    {totalTasks} tasks
+                  </div>
                 </div>
               </div>
-              <h3 className="font-bold text-gray-900 mb-2 text-lg group-hover:text-blue-600 transition-colors">{project.name}</h3>
-              {project.description && (
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">{project.description}</p>
-              )}
-              <div className="flex items-center gap-3 pt-3 border-t border-gray-200">
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Users size={14} />
-                  {project.members?.length || 0} members
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -1224,7 +1271,8 @@ function ProjectDetailView({ projectId, onBack, user }: { projectId: string; onB
 
 // My Tasks View
 function MyTasksView({ user }: { user: User }) {
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasksAssignedToMe, setTasksAssignedToMe] = useState<any[]>([]);
+  const [tasksAssignedByMe, setTasksAssignedByMe] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -1232,12 +1280,22 @@ function MyTasksView({ user }: { user: User }) {
       try {
         const projectsData = await api.getProjects();
 
-        const allTasks: any[] = [];
+        const assigned: any[] = [];
+        const assignedBy: any[] = [];
+
         for (const project of projectsData.projects) {
-          const tasksData = await api.getTasks(project.id, { assignee: user.id });
-          allTasks.push(...tasksData.tasks);
+          const tasksData = await api.getTasks(project.id);
+          const allTasks = tasksData.tasks.map((t: any) => ({ ...t, projectId: project.id, projectName: project.name }));
+          
+          // Tasks assigned to current user
+          assigned.push(...allTasks.filter((t: any) => t.assignee === user.id));
+          
+          // Tasks created by current user (assigned to others)
+          assignedBy.push(...allTasks.filter((t: any) => t.createdBy === user.id && t.assignee !== user.id));
         }
-        setTasks(allTasks);
+
+        setTasksAssignedToMe(assigned);
+        setTasksAssignedByMe(assignedBy);
       } catch (error) {
         console.error(error);
       } finally {
@@ -1259,63 +1317,97 @@ function MyTasksView({ user }: { user: User }) {
     );
   }
 
-  return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6 animate-slide-in-up">
-        My Tasks
-      </h2>
-
-      {tasks.length === 0 ? (
-        <div className="text-center py-20 animate-slide-in-up">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-            <CheckSquare className="text-white" size={40} />
+  const TaskCard = ({ task, showAssignee = true }: { task: any; showAssignee?: boolean }) => (
+    <div className="glass-effect rounded-xl p-4 border border-blue-100 hover:border-blue-400 transition-all duration-300 group">
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-bold text-gray-900 mb-1 truncate">{task.title}</h4>
+          {task.description && (
+            <p className="text-xs text-gray-600 line-clamp-2 mb-2">{task.description}</p>
+          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="status" value={task.status} />
+            <Badge variant="priority" value={task.priority} />
+            {task.projectName && (
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                {task.projectName}
+              </span>
+            )}
           </div>
-          <p className="text-gray-600 text-lg">No tasks assigned to you yet</p>
         </div>
-      ) : (
-        <div className="glass-effect rounded-2xl border border-gray-200 overflow-hidden animate-slide-in-up">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gradient-to-r from-blue-600 to-blue-700">
-                <tr>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-white uppercase tracking-wider">Title</th>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-white uppercase tracking-wider">Status</th>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-white uppercase tracking-wider">Priority</th>
-                  <th className="text-left px-6 py-4 text-xs font-semibold text-white uppercase tracking-wider">Due Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {tasks.map((task, index) => (
-                  <tr key={task.id} className="hover:bg-blue-50/50 transition-colors" style={{animationDelay: `${index * 0.05}s`}}>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-semibold text-gray-900">{task.title}</div>
-                      {task.description && (
-                        <div className="text-xs text-gray-600 line-clamp-1 mt-1">{task.description}</div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant="status" value={task.status} />
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant="priority" value={task.priority} />
-                    </td>
-                    <td className="px-6 py-4">
-                      {task.dueDate ? (
-                        <div className={`text-xs font-medium ${
-                          new Date(task.dueDate) < new Date() && task.status !== 'done'
-                            ? 'text-red-600'
-                            : 'text-gray-600'
-                        }`}>
-                          {new Date(task.dueDate).toLocaleDateString()}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-gray-400">-</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {showAssignee && task.assigneeInfo && (
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <Avatar name={task.assigneeInfo.name} size="sm" />
+            <div className="text-right hidden md:block">
+              <div className="text-xs font-semibold text-gray-900">{task.assigneeInfo.name}</div>
+              <div className="text-xs text-gray-500">{task.assigneeInfo.email}</div>
+            </div>
+          </div>
+        )}
+      </div>
+      {task.dueDate && (
+        <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto pt-2 border-t border-gray-100">
+          <Calendar size={12} />
+          <span>Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="p-6 space-y-8">
+      <div className="animate-slide-in-up">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">My Tasks</h2>
+        <p className="text-gray-600">Manage all your assigned work</p>
+      </div>
+
+      {/* Tasks Assigned to Me */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <CheckSquare size={20} className="text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">Assigned to Me</h3>
+            <p className="text-sm text-gray-600">{tasksAssignedToMe.length} task{tasksAssignedToMe.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+
+        {tasksAssignedToMe.length === 0 ? (
+          <div className="glass-effect rounded-xl p-12 text-center border border-blue-100">
+            <CheckSquare className="text-gray-300 mx-auto mb-3" size={32} />
+            <p className="text-gray-500">No tasks assigned to you</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-slide-in-up">
+            {tasksAssignedToMe.map((task, index) => (
+              <div key={task.id} style={{animationDelay: `${index * 0.05}s`}}>
+                <TaskCard task={task} showAssignee={false} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Tasks Assigned by Me */}
+      {tasksAssignedByMe.length > 0 && (
+        <div className="space-y-4 pt-6 border-t border-gray-200">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <Users size={20} className="text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Assigned by You</h3>
+              <p className="text-sm text-gray-600">{tasksAssignedByMe.length} task{tasksAssignedByMe.length !== 1 ? 's' : ''}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-slide-in-up" style={{animationDelay: '0.2s'}}>
+            {tasksAssignedByMe.map((task, index) => (
+              <div key={task.id} style={{animationDelay: `${0.2 + index * 0.05}s`}}>
+                <TaskCard task={task} showAssignee={true} />
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -1397,7 +1489,7 @@ export default function App() {
                   onCloseMobile={() => setIsMobileSidebarOpen(false)}
                 />
                 <main className="flex-1 overflow-auto">
-                  {activeView === 'dashboard' && <DashboardView user={user} />}
+                  {activeView === 'dashboard' && <DashboardView user={user} onSelectProject={setSelectedProjectId} />}
                   {activeView === 'projects' && (
                     <ProjectsView user={user} onSelectProject={setSelectedProjectId} />
                   )}

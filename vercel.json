@@ -7,24 +7,15 @@
   "framework": "vite",
   "public": false,
   "outputDirectory": "dist",
-  "env": [
-    {
-      "key": "VITE_API_URL",
-      "description": "API endpoint URL",
-      "value": "",
-      "type": "string"
+  "env": {
+    "VITE_API_URL": {
+      "description": "API endpoint URL"
     },
-    {
-      "key": "VITE_SUPABASE_URL",
-      "description": "Supabase project URL",
-      "value": "",
-      "type": "string"
+    "VITE_SUPABASE_URL": {
+      "description": "Supabase project URL"
     },
-    {
-      "key": "VITE_SUPABASE_KEY",
-      "description": "Supabase anonymous key",
-      "value": "",
-      "type": "string"
+    "VITE_SUPABASE_KEY": {
+      "description": "Supabase anonymous key"
     }
-  ]
+  }
 }

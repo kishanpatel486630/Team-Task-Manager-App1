@@ -7,7 +7,6 @@
   "framework": "vite",
   "public": false,
   "outputDirectory": "dist",
-  "nodeVersion": "18.x",
   "env": [
     {
       "key": "VITE_API_URL",

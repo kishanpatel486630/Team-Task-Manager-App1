@@ -6,16 +6,5 @@
   "installCommand": "npm install",
   "framework": "vite",
   "public": false,
-  "outputDirectory": "dist",
-  "env": {
-    "VITE_API_URL": {
-      "description": "API endpoint URL"
-    },
-    "VITE_SUPABASE_URL": {
-      "description": "Supabase project URL"
-    },
-    "VITE_SUPABASE_KEY": {
-      "description": "Supabase anonymous key"
-    }
-  }
+  "outputDirectory": "dist"
 }
